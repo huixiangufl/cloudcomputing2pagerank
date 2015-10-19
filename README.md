@@ -9,21 +9,21 @@ NumOfIteartions=0
 
 for each loop:
 
-  call Pagerank (ConvertToOneFile)
+\t  call Pagerank (ConvertToOneFile)
 
-  call ConvertToOneFile (GraphFileThisRound, GraphFileLastRound)
+\t  call ConvertToOneFile (GraphFileThisRound, GraphFileLastRound)
 
-  call CalculateSquare(ConvertOutputFile)
+\t  call CalculateSquare(ConvertOutputFile)
 
-  NumOfIterations=NumOfIterations+1
+\t  NumOfIterations=NumOfIterations+1
 
-  if square <= ThresHold
+\t  if square <= ThresHold
 
-  exit loop
+\t\t  exit loop
 
-  else    
+\t  else    
 
-  continue
+\t\t continue
 
 call GraphEdgesCount to get the number of nodes, the number of edges, average/max/min out-degree of nodes.
 
