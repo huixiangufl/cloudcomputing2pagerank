@@ -2,20 +2,33 @@
 The procedure of the main loop in ExecutionPageRank.java is written as follows in Pseudo code:
 
 Main:
+
 call LinkGraph to convert the input graph format to our defined format
+
 NumOfIteartions=0
+
 for each loop:
+
   call Pagerank (ConvertToOneFile)
+
   call ConvertToOneFile (GraphFileThisRound, GraphFileLastRound)
+
   call CalculateSquare(ConvertOutputFile)
+
   NumOfIterations=NumOfIterations+1
+
   if square <= ThresHold
+
   exit loop
+
   else    
+
   continue
 
 call GraphEdgesCount to get the number of nodes, the number of edges, average/max/min out-degree of nodes.
+
 call SortPageRank to get the top 10 <page, value> pairs
+
 System.out.printLn(NumOfIterations)
 
 
