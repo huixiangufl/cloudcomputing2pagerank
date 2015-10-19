@@ -36,7 +36,7 @@ public class CalculateSquare {
   public static class Reduce extends MapReduceBase implements Reducer<Text, Text, Text, Text> {
     private Text GlobalSquareValue = new Text();
     public void reduce(Text key, Iterator<Text> values, OutputCollector<Text, Text> output, Reporter reporter) throws IOException {
-      double globalSquare = 0.0;
+      globalSquare = 0.0;
       while(values.hasNext()) {
         globalSquare += new Double(values.next().toString());
       }
@@ -44,28 +44,10 @@ public class CalculateSquare {
       GlobalSquareValue.set(String.valueOf(globalSquare));
 
       output.collect(key, GlobalSquareValue);
+
     }
   }
 
-
-  public static void main(String[] args) throws Exception {
-    JobConf conf = new JobConf(CalculateSquare.class);
-    conf.setJobName("calculatesquare");
-
-    conf.setOutputKeyClass(Text.class);
-    conf.setOutputValueClass(Text.class);
-
-    conf.setMapperClass(Map.class);
-    conf.setReducerClass(Reduce.class);
-
-    conf.setInputFormat(TextInputFormat.class);
-    conf.setOutputFormat(TextOutputFormat.class);
-
-    FileInputFormat.setInputPaths(conf, new Path(args[0]));
-    FileOutputFormat.setOutputPath(conf, new Path(args[1]));
-
-    JobClient.runJob(conf);
-  }
 
 
 }

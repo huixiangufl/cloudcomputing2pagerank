@@ -52,23 +52,5 @@ public class LinkGraph {
 
   }
 
-  public static void main(String[] args) throws Exception {
-    JobConf conf = new JobConf(LinkGraph.class);
-    conf.setJobName("LinkGraph");
 
-    conf.setOutputKeyClass(Text.class);
-    conf.setOutputValueClass(Text.class);
-
-    conf.setMapperClass(Map.class);
-    // conf.setCombinerClass(Reduce.class);
-    conf.setReducerClass(Reduce.class);
-
-    conf.setInputFormat(TextInputFormat.class);
-    conf.setOutputFormat(TextOutputFormat.class);
-
-    FileInputFormat.setInputPaths(conf, new Path(args[0]));
-    FileOutputFormat.setOutputPath(conf, new Path(args[1]));
-
-    JobClient.runJob(conf);
-  }
 }

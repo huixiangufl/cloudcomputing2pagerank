@@ -48,7 +48,6 @@ public class SortPageRank {
         double pagerank = (SORTMAX - new Integer(key.toString())) / SORTMULT;
         String pagerankStr = String.format("%12.10f", pagerank);
         RankValue.set(pagerankStr);
-//        output.collect(RankValue, values.next());
         output.collect(values.next(), RankValue);
         count++;
       }
@@ -56,24 +55,7 @@ public class SortPageRank {
 
   }
 
-  public static void main(String[] args) throws Exception {
-    JobConf conf = new JobConf(SortPageRank.class);
-    conf.setJobName("sortpagerank");
 
-    conf.setOutputKeyClass(Text.class);
-    conf.setOutputValueClass(Text.class);
-
-    conf.setMapperClass(Map.class);
-    conf.setReducerClass(Reduce.class);
-
-    conf.setInputFormat(TextInputFormat.class);
-    conf.setOutputFormat(TextOutputFormat.class);
-
-    FileInputFormat.setInputPaths(conf, new Path(args[0]));
-    FileOutputFormat.setOutputPath(conf, new Path(args[1]));
-
-    JobClient.runJob(conf);
-  }
 
 
 }

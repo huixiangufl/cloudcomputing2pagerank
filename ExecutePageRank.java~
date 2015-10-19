@@ -1,0 +1,110 @@
+package org.myorg;
+
+import java.io.IOException;
+import java.util.*;
+
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapred.*;
+import org.apache.hadoop.util.*;
+
+import org.myorg.GraphEdgesCount;
+import org.myorg.LinkGraph;
+import org.myorg.PageRank;
+import org.myorg.SortPageRank;
+import org.myorg.ConvertToOneFile;
+import org.myorg.CalculateSquare;
+
+
+public class ExecutePageRank {
+
+	public static void main(String [] args) throws Exception {
+		if(args.length < 4) {
+			System.out.println("Usage: ExecutePageRank <inputGraphFile> <intermediateFilePath> <graphSummaryOutput> <top10PageRankoutput>");
+			System.exit(-1);
+		}
+		
+		Path inputPath = new Path(args[0]);
+		Path intermediateFilePath = new Path(args[1]);
+		String intermediateFilePathStr = args[1];
+		Path graphSummaryPath = new Path(args[2]);
+		Path top10PageRankPath = new Path(args[3]);
+		
+		JobConf conf = new JobConf(LinkGraph.class);
+		conf.setJobName("linkgraph");	
+		FileSystem fs = FileSystem.get(conf);
+			
+		//delete intemediate path if exists
+		if(fs.exists(intermediateFilepath)) fs.delete(intermediateFilePath, true);
+		
+		//Build the initial link for the input graph, by running job LinkGraph
+    		conf.setOutputKeyClass(Text.class);
+    		conf.setOutputValueClass(Text.class);
+    		
+    		conf.setMapperClass(LinkGraph.Map.class);
+    		conf.setReducerClass(LinkGraph.Reduce.class);
+
+    		conf.setInputFormat(TextInputFormat.class);
+    		conf.setOutputFormat(TextOutputFormat.class);
+
+    		FileInputFormat.setInputPaths(conf, inputPath);
+    		FileOutputFormat.setOutputPath(conf, new Path(intermediateFilePathStr + "/iteration0"));
+    		JobClient.runJob(conf);
+    		
+    		int iteration = 1;
+    		    		
+    		do {
+    			// now use the PageRank class
+    			conf = new JobConf(PageRank.class);
+    			conf.setJobName("pagerank");
+    			conf.setOutputKeyClass(Text.class);
+    			conf.setOutputValueClass(Text.class);
+    			conf.setMapperClass(PageRank.Map.class);
+    			conf.setReducerClass(PageRank.Reduce.class);
+    			conf.setInputFormat(TextInputFormat.class);
+    			conf.setOutputFormat(TextOutputFormat.class);
+    			FileInputFormat.setInputPaths(conf, intermediateFilePathStr + "iteration" + (iteration-1).toString());
+    			FileOutputFormat.setOutputPath(conf, intermediateFilePathStr + "iteration" + iteration.toString());	
+    			JobClient.runJob(conf);
+    			
+    			// now use the ConvertToOneFile class
+    			conf = new JobConf(ConvertToOneFile.class);
+    			conf.setJobName("converttoonefile");
+    			conf.setOutputKeyClass(Text.class);
+    			conf.setOutputValueClass(Text.class);
+    			conf.setMapperClass(ConvertToOneFile.Map.class);
+    			conf.setReducerClass(ConvertToOneFile.Reduce.class);    
+    			conf.setInputFormat(TextInputFormat.class);
+    			conf.setOutputFormat(TextOutputFormat.class);
+    			
+    			String cInput = intermediateFilePathStr + "iteration" + (iteration-1).toString();
+    			cInput = + "," + intermediateFilePathStr + "iteration" + iteration.toString();
+    			String cOutput = intermediateFilePathStr + "convertoutput" + iteration.toString();
+    			FileInputFormat.setInputPaths(conf, cInput);
+    			FileOutputFormat.setOutputPath(conf, cOutput);
+    			JobClient.runJob(conf);
+    			
+    			//now use the CalculateSquare class to get the standard deviation of pagerank values of this round and last round
+    			conf = new JobConf(CalculateSquare.class);
+    			conf.setJobName("calculatesquare");
+    			conf.setOutputKeyClass(Text.class);
+    			conf.setOutputValueClass(Text.class);
+    			conf.setMapperClass(CalculateSquare.Map.class);
+    			conf.setReducerClass(CalculateSquare.Reduce.class);
+    			conf.setInputFormat(TextInputFormat.class);
+    			conf.setOutputFormat(TextOutputFormat.class);
+    			
+    			String sInput = cOutput;
+    			String sOutput = intermediateFilePathStr + "squarevalue" + iteration.toString();
+    			FileInputFormat.setInputPaths(conf, sInput);
+    			FileOutputFormat.setOutputPath(conf, sOutput);
+    			JobClient.runJob(conf);
+    			
+    			iteration++;
+    		} while (iteration < 2); 
+//    		} while (globalSquare > 1.0);
+
+	}
+	
+};
