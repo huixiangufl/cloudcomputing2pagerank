@@ -27,45 +27,32 @@ page neighbor_set
 page\t page_rank_value num_of_neighbors neighbor_set
 
 
-LinkGraph:
-
+#LinkGraph:
 Input: input graph format
-
 Output: defined graph format with pagerank value initialized as 1.0
 
-Pagerank: 
-
+#Pagerank: 
 Input: defined graph format
-
 Output: defined graph format
 
-ConvertToOneFile:
-
+#ConvertToOneFile:
 Input: graph_this_iteration and graph_last_iteration
-
 Output: In each row: <page> <page_rank_value_this_iteration> <page_rank_value_last_iteration>
 
-CalculateSquare:
-
+#CalculateSquare:
 Input: Output of ConvertToOneFile
-
 Output: Standard deviation of pagerank values of this iteration with last iteration
 
-GraphEdgesCount:
-
+#GraphEdgesCount:
 Input: input graph format
-
 Output: number of nodes, edges, average/min/max out-degree
 
-Sort: 
-
+#SortPageRank: 
 Input: graph of the last iteration
-
 Output: sorted <page, value> pairs of top 10 in descending order
 
 
-How to run the program?
-
+#How to run the program?
 Four input parameters:
 
 para1: inputGraphFilePath
@@ -76,6 +63,7 @@ para3: graphSummaryOutputFile
 
 para4: top10<k,v>outputFile
 
+#compile and run
 mkdir pagerank_classes
 
 javac -classpath $HADOOP_HOME/hadoop-1.2.1/hadoop-core-1.2.1.jar -d pagerank_classes/ *.java
